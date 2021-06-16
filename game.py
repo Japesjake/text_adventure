@@ -23,29 +23,42 @@ class Player():
     pass
 
 class Npc():
-    def __init__(self, name, armor, weapon, secondary_weapon):
+    def __init__(self, name, armor_string, weapon_string, secondary_weapon_string):
         self.name = name
-        self.armor = armor
-        self.weapon = weapon
-        self.secondary_weapon = secondary_weapon
+        self.armor_string = armor_string
+        self.weapon_string = weapon_string
+        self.secondary_weapon_string = secondary_weapon_string
+        self.armor = pickle.load(open(os.path.join('data','items','armor', self.armor_string + '.p'),'rb'))
+        self.weapon = pickle.load(open(os.path.join('data','items','weapons', self.weapon_string + '.p'),'rb'))
+        self.secondary_weapon = pickle.load(open(os.path.join('data','items','weapons', self.secondary_weapon_string + '.p'),'rb'))
+        self.health = 100
 
+class Armor():
+    def __init__(self, name, worth, armor_class):
+        self.name = name
+        self.worth = worth
+        self.armor_class = armor_class  
 
-
-
-
-
+class Weapon():
+    def __init__(self, name, worth, damage, type, accuracy):
+        self.name = name
+        self.worth = worth
+        self.damage = damage
+        self.damage_type = type       
+        self.accuracy = accuracy
 
 def main():
-    # npc = Npc('bandit captain', 'studded leather', 'two-handed axe', None)
-    # pickle.dump(npc, open(os.path.join('data','npcs',npc.name + '.p'),'wb'))
     battle = Battle('Caravan', ['Lethomyr Darkin'], ['bandit', 'bandit', 'bandit', 'bandit captain'])
-    battle.load_npcs()
-    # print(battle.friendly_npc_object_set, battle.enemy_npc_object_set)
-    # for npc in battle.friendly_npc_object_set:
-    #     print(npc.name, npc.armor, npc.weapon, npc.secondary_weapon)
-    # for npc in battle.enemy_npc_object_set:
-    #     print(npc.name, npc.armor, npc.weapon, npc.secondary_weapon)
-    
-
+    battle.load_npcs()    
+    for npc in battle.friendly_npc_object_set:
+        print(npc.name, npc.armor, npc.weapon, npc.secondary_weapon)
+    for npc in battle.enemy_npc_object_set:
+        print(npc.name, npc.armor, npc.weapon, npc.secondary_weapon)
+    # npc = Npc('bandit', 'leather', 'axe', 'fist')
+    # pickle.dump(npc, open(os.path.join('data','npcs',npc.name + '.p'),'wb'))
+    # armor = Armor('plate', 500, 6)
+    # pickle.dump(armor, open(os.path.join('data','items','armor',armor.name + '.p'),'wb'))     
+    weapon = Weapon('round shield', 0, 2, 'raw', 95)
+    pickle.dump(weapon, open(os.path.join('data','items','weapons',weapon.name + '.p'),'wb'))
 if __name__ == "__main__":
     main()
