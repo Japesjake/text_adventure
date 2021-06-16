@@ -1,4 +1,4 @@
-import tkinter
+import os
 
-class Window():
-    pass
+for subdirs, dirs, files in os.walk(r'.\data'):
+    print(file)
