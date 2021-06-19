@@ -3,12 +3,16 @@ import os, pickle
 class Data():
     def __init__(self):
         self.install_npcs()
+        self.install_armor()
+        self.install_weapons()
     def install_npc(self, object):
         pickle.dump(object, open(os.path.join('data','npcs', object.name + '.p'),'wb'))
     def install_armor_piece(self, object):
         pickle.dump(object, open(os.path.join('data','items', 'armor', object.name + '.p'),'wb'))   
     def install_weapon(self, object):
-        pickle.dump(object, open(os.path.join('data','items', 'weapon', object.name + '.p'),'wb'))       
+        pickle.dump(object, open(os.path.join('data','items', 'weapons', object.name + '.p'),'wb'))
+    def install_battle(self, object):
+        pickle.dump(object, open(os.path.join('data','battles', object.name + '.p'),'wb'))               
     def install_npcs(self):
         self.install_npc(Npc('Lethomyr Darkin', 'plate', 'longsword', 'fist'))
         self.install_npc(Npc('bandit captain', 'studded leather', 'two-handed axe', 'fist'))
@@ -23,21 +27,24 @@ class Data():
         self.install_weapon(Weapon('axe', 6, 'chopping'))        
         self.install_weapon(Weapon('fist', 2, 'raw'))        
         self.install_weapon(Weapon('longsword', 10, 'piercing'))        
-        self.install_weapon(Weapon('round shield', 0, 'shield'))        
+        self.install_weapon(Weapon('round wooden shield', 0, 'shield'))        
         self.install_weapon(Weapon('two-handed axe', 12, 'chopping'))        
         # self.install_weapon(Weapon('name', damage, 'type'))
+    def install_battles():
+        install_battle(Battle('Caravan', ['Lethomyr Darkin'], ['bandit', 'bandit', 'bandit', 'bandit captain']))
     def load(self, name):
         for subdir, dirs, files in os.walk(r'.\data'):
             for filename in files:
                 if name + '.p' == filename:
                     path = subdir + os.sep + filename
-                    print(path)
                     return pickle.load(open(path,'rb'))
 
 
-class Scene():
-    def __init__(self, name):
-        self.name = name
+class Caravan():
+    def play():
+        print('You are escorting a caravan when bandits attack.')
+    def battle():
+        battle = load
 
 class Battle():
     def __init__(self, name, friendly_npc_string_list, enemy_npc_string_list):
@@ -45,17 +52,24 @@ class Battle():
         self.friendly_npc_strings_list = friendly_npc_string_list
         self.enemy_npc_strings_list = enemy_npc_string_list
         self.npc_strings_list = friendly_npc_string_list + enemy_npc_string_list
+        self.npc_objects = set()
     def load_objects(self):
         self.load_npcs()
         self.load_armor()
+        self.load_weapons()
+        self.load_secondary_weapons()
     def load_npcs(self):
-        self.npc_objects = set()
         for npc_string in self.npc_strings_list:
             self.npc_objects.add(pickle.load(open(os.path.join('data','npcs', npc_string + '.p'),'rb')))
     def load_armor(self):
-        self.armor_object_set = set()
         for npc in self.npc_objects:
             npc.armor = data.load(npc.armor)
+    def load_weapons(self):
+        for npc in self.npc_objects:
+            npc.weapon = data.load(npc.weapon)
+    def load_secondary_weapons(self):
+        for npc in self.npc_objects:
+            npc.secondary_weapon = data.load(npc.secondary_weapon)                    
 
             
 
@@ -76,18 +90,15 @@ class Npc():
         self.health = 100
 
 class Armor():
-    def __init__(self, name, armor_class, worth):
+    def __init__(self, name, armor_class):
         self.name = name
-        self.worth = worth
         self.armor_class = armor_class  
 
 class Weapon():
-    def __init__(self, name, worth, damage, type, accuracy):
+    def __init__(self, name, damage, type):
         self.name = name
-        self.worth = worth
         self.damage = damage
         self.damage_type = type       
-        self.accuracy = accuracy
 
 def main():
     global data
