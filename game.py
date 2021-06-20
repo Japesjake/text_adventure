@@ -1,10 +1,11 @@
-import os, pickle
+import os, pickle, random
 
 class Data():
     def __init__(self):
         self.install_npcs()
         self.install_armor()
         self.install_weapons()
+        self.install_player('JP', 'plate', 'longsword', 'fist')
     def install_npc(self, object):
         pickle.dump(object, open(os.path.join('data','npcs', object.name + '.p'),'wb'))
     def install_armor_piece(self, object):
@@ -18,6 +19,8 @@ class Data():
         self.install_npc(Npc('bandit captain', 'studded leather', 'two-handed axe', 'fist'))
         self.install_npc(Npc('bandit', 'leather', 'axe', 'round wooden shield'))
         # self.install_npc(Npc('name', 'armor', 'weapon', 'secweapon'))
+    def install_player(self, name, armor, weapon, secondary_weapon):
+        pickle.dump(Player(name, armor, weapon, secondary_weapon), open(os.path.join('data', 'player.p'),'wb'))
     def install_armor(self):
         self.install_armor_piece(Armor('leather', '2'))
         self.install_armor_piece(Armor('plate', 5))
@@ -61,6 +64,8 @@ class Battle():
     def load_npcs(self):
         for npc_string in self.npc_strings_list:
             self.npc_objects.add(pickle.load(open(os.path.join('data','npcs', npc_string + '.p'),'rb')))
+    def load_player(self):
+        self.npc_objects.add(pickle.load(open(os.path.join('data','npcs', 'player.p'),'rb')))
     def load_armor(self):
         for npc in self.npc_objects:
             npc.armor = data.load(npc.armor)
@@ -69,7 +74,16 @@ class Battle():
             npc.weapon = data.load(npc.weapon)
     def load_secondary_weapons(self):
         for npc in self.npc_objects:
-            npc.secondary_weapon = data.load(npc.secondary_weapon)                    
+            npc.secondary_weapon = data.load(npc.secondary_weapon)
+    def start(self):
+        self.npc_turn_order = list(self.npc_objects.copy())
+        random.shuffle(self.npc_turn_order)
+        for npc in self.npc_turn_order:
+            pass
+            
+                    
+
+
 
             
 
@@ -105,7 +119,8 @@ def main():
     data = Data()
     # data.install_npcs()
     battle = Battle('Caravan', ['Lethomyr Darkin'], ['bandit', 'bandit', 'bandit', 'bandit captain'])
-    battle.load_objects()    
+    battle.load_objects()
+    battle.start()
     for npc in battle.npc_objects:
         print(npc.name, npc.armor, npc.weapon, npc.secondary_weapon)
 if __name__ == "__main__":
